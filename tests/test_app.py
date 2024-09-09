@@ -19,7 +19,7 @@ class FlaskTestCase(unittest.TestCase):
     def test_login_success(self):
         tester = app.test_client(self)
         response = tester.post('/login',
-                       data={"username": "correct_user", "password": "correct_password"},
+                       data={"username": "db", "password": "1234567"},
                        follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Logged in successfully!', response.data)
@@ -41,7 +41,7 @@ class FlaskTestCase(unittest.TestCase):
     # Ensure logout works properly
     def test_logout(self):
         tester = app.test_client(self)
-        tester.post('/login', data=dict(username="correct_user", password="correct_password"), follow_redirects=True)
+        tester.post('/login', data=dict(username="db", password="1234567"), follow_redirects=True)  # Correct credentials for login
         response = tester.get('/logout', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         self.assertNotIn('loggedin', session)  # Check if the user is logged out
