@@ -1,9 +1,13 @@
 import unittest
-from app import app
 from flask import session
+from app import app
 
+
+"""
+This module contains unit tests for the Flask application.
+"""
 class FlaskTestCase(unittest.TestCase):
-
+    """Unit tests for Flask application."""
     # Ensure that Flask was set up correctly
     def test_home(self):
         tester = app.test_client(self)
@@ -14,7 +18,9 @@ class FlaskTestCase(unittest.TestCase):
     # Ensure login behaves correctly with correct credentials
     def test_login_success(self):
         tester = app.test_client(self)
-        response = tester.post('/login', data=dict(username="correct_user", password="correct_password"), follow_redirects=True)
+        response = tester.post('/login',
+                       data={"username": "correct_user", "password": "correct_password"},
+                       follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Logged in successfully!', response.data)
 
