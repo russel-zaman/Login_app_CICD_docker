@@ -3,7 +3,7 @@ name: Python Flask Application & Code Analysis
 on:
   push:
     branches:
-      - setup/codebase
+      - unittest/codebase
   pull_request:
     branches:
       - dev

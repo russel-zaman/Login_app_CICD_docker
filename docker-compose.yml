@@ -1,0 +1,33 @@
+version: "3.4"
+
+services:
+  app:
+    image: loginapp
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: prod
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/app:cached
+    env_file: .env
+  debugger:
+    image: debugger
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: debugger
+    ports:
+      - 5000:5000
+      - 5678:5678
+    volumes:
+      - .:/app:cached
+    env_file: .env
+  unit-test-container:
+    image: unit-test-container
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: test
+    env_file: .env
