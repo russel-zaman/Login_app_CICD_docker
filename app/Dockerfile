@@ -11,6 +11,10 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Ensures output is immediately flushed to the terminal for better container logging.
 ENV PYTHONUNBUFFERED=1
 
+# Install system dependencies for mysqlclient
+RUN apt-get update && apt-get install -y \
+    default-libmysqlclient-dev build-essential
+
 # The requirements.txt file is copied to the container, and Python dependencies are installed via pip.
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
