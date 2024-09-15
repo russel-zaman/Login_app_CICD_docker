@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends\
         pkg-config \
         libmariadb-dev \
         build-essential \
@@ -38,3 +38,5 @@ EXPOSE 5000
 ENTRYPOINT ["./entrypoint.sh"]
 
 
+# Optional: specify the command (if necessary)
+#CMD ["python", "app.py"]
