@@ -20,7 +20,7 @@ app.secret_key = 'secret'
 # Configuration
 app.config['MYSQL_HOST'] = "db"
 app.config['MYSQL_USER'] = "flask"
-app.config['MYSQL_PASSWORD'] = "1234567"
+app.config['MYSQL_PASSWORD'] = "12345678"
 app.config['MYSQL_DATABASE'] = "geeklogin"
 app.config['MYSQL_PORT'] = 3306
 
