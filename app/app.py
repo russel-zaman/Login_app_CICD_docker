@@ -9,20 +9,20 @@ app = Flask(__name__)
 app.secret_key = 'secret'
 
 # Configuration
-# app.config['MYSQL_HOST'] = os.environ['MYSQL_HOST']
-# app.config['MYSQL_USER'] = os.environ['MYSQL_USER']
-# app.config['MYSQL_PASSWORD'] = os.environ['MYSQL_PASSWORD']
-# app.config['MYSQL_DATABASE'] = os.environ['MYSQL_DATABASE']
-# app.config['MYSQL_PORT'] = int(os.environ['MYSQL_PORT'] ) # Docker MySQL port
+app.config['MYSQL_HOST'] = os.environ['MYSQL_HOST']
+app.config['MYSQL_USER'] = os.environ['MYSQL_USER']
+app.config['MYSQL_PASSWORD'] = os.environ['MYSQL_PASSWORD']
+app.config['MYSQL_DATABASE'] = os.environ['MYSQL_DATABASE']
+app.config['MYSQL_PORT'] = int(os.environ['MYSQL_PORT'] ) # Docker MySQL port
 
 #-----for the static value 
 
 # Configuration
-app.config['MYSQL_HOST'] = "db"
-app.config['MYSQL_USER'] = "flask"
-app.config['MYSQL_PASSWORD'] = "12345678"
-app.config['MYSQL_DATABASE'] = "geeklogin"
-app.config['MYSQL_PORT'] = 3306
+# app.config['MYSQL_HOST'] = "db"
+# app.config['MYSQL_USER'] = "flask"
+# app.config['MYSQL_PASSWORD'] = "12345678"
+# app.config['MYSQL_DATABASE'] = "geeklogin"
+# app.config['MYSQL_PORT'] = 3306
 
 
 mysql = MySQL(app)
