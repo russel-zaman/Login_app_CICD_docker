@@ -1,14 +1,13 @@
-# Use the official Python image from the Docker Hub
-FROM python:3.10-slim
+# Base image
+FROM python:3.10-slim as base
 
-# Set environment variables within Docker container
-# When it is set to 1, it tells Python not to write .pyc files
-ENV PYTHONDONTWRITEBYTECODE 1       
-ENV PYTHONUNBUFFERED 1
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends\
+    && apt-get install -y --no-install-recommends \
         pkg-config \
         libmariadb-dev \
         build-essential \
@@ -17,26 +16,37 @@ RUN apt-get update \
 # Set the working directory
 WORKDIR /app
 
-# Copy the requirements file
+# Copy requirements file and install Python dependencies
 COPY requirements.txt /app/
-
-# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
 COPY . /app/
 
-COPY entrypoint.sh /app/
+# Copy .env file
+COPY .env /app/.env
 
 # Make entrypoint.sh executable
+COPY entrypoint.sh /app/
 RUN chmod +x entrypoint.sh
 
-# Expose port 5000
+# Expose the Flask app port
 EXPOSE 5000
 
-# Use the custom entry point script
+# Development Stage
+FROM base as development
+CMD ["flask", "run", "--host", "0.0.0.0"]
+
+# Debugging Stage
+FROM base as debugger
+RUN pip install debugpy
+CMD ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "--wait-for-client", "-m", "flask", "run", "-h", "0.0.0.0", "-p", "5000"]
+
+# Testing Stage
+FROM base as test
+RUN pip install pytest
+CMD ["pytest"]
+
+# Production Stage
+FROM base as production
 ENTRYPOINT ["./entrypoint.sh"]
-
-
-# Optional: specify the command (if necessary)
-#CMD ["python", "app.py"]
