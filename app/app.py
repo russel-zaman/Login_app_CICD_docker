@@ -15,6 +15,13 @@ app.config['MYSQL_PASSWORD'] = os.environ['MYSQL_PASSWORD']
 app.config['MYSQL_DATABASE'] = os.environ['MYSQL_DATABASE']
 app.config['MYSQL_PORT'] = int(os.environ['MYSQL_PORT'] ) # Docker MySQL port
 
+# Configuration
+# app.config['MYSQL_HOST'] = "db"
+# app.config['MYSQL_USER'] = "flask"
+# app.config['MYSQL_PASSWORD'] = "12345678"
+# app.config['MYSQL_DATABASE'] = "geeklogin"
+# app.config['MYSQL_PORT'] = 3306
+
 mysql = MySQL(app)
 
 @app.route('/')
@@ -25,7 +32,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('USE geeklogin')  # Explicitly select the database
+#        cursor.execute('USE geeklogin')  # Explicitly select the database
         cursor.execute('SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password))
         account = cursor.fetchone()
         if account:
@@ -53,7 +60,7 @@ def register():
         password = request.form['password']
         email = request.form['email']
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('USE geeklogin')  # Explicitly select the database
+#        cursor.execute('USE geeklogin')  # Explicitly select the database
         cursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
         account = cursor.fetchone()
         if account:

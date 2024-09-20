@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends\
         pkg-config \
         libmariadb-dev \
         build-essential \
@@ -37,4 +37,5 @@ EXPOSE 5000
 # Use the custom entry point script
 ENTRYPOINT ["./entrypoint.sh"]
 
+RUN pip install pytest
 
