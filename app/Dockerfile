@@ -37,4 +37,6 @@ EXPOSE 5000
 # Use the custom entry point script
 ENTRYPOINT ["./entrypoint.sh"]
 
+RUN pip install pytest
 
+CMD [ "python", "-m", "pytest" ]
