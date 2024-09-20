@@ -5,7 +5,7 @@ on:
   push:
     branches: [ dev ]
   pull_request:
-    types: [ opened, reopened ]
+    branches: [ dev ]
 
 jobs:
   build:
@@ -15,19 +15,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
-
-      - name: Install Docker Compose
+      - name: Set up Docker Compose
         run: |
           sudo apt-get update
-          sudo apt-get install docker-compose
+          sudo apt-get install -y docker-compose
 
       - name: Generate required .env file
         run: |
-          echo DEBUG=True >> .env
-          echo FLASK_DEBUG=1 >> .env
-          echo FLASK_APP=run.py >> .env
           echo MYSQL_HOST=db >> .env
           echo MYSQL_USER=flask >> .env
           echo MYSQL_PASSWORD=12345678 >> .env

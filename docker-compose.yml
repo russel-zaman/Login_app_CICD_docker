@@ -35,7 +35,39 @@ services:
     ports:
       - "5000:5000"
 
-    env_file: .env
+    env_file: .envversion: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: geeklogin
+      MYSQL_USER: flask
+      MYSQL_PASSWORD: 12345678
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+
+  web:
+    build: .
+    command: flask run --host=0.0.0.0
+    ports:
+      - "5000:5000"
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=flask
+      - MYSQL_PASSWORD=12345678
+      - MYSQL_DATABASE=geeklogin
+      - MYSQL_PORT=3306
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+
 
 
     networks:

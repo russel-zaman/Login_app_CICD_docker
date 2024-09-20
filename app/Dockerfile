@@ -39,4 +39,3 @@ ENTRYPOINT ["./entrypoint.sh"]
 
 RUN pip install pytest
 
-CMD [ "python", "-m", "pytest" ]

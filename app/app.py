@@ -32,7 +32,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('USE geeklogin')  # Explicitly select the database
+#        cursor.execute('USE geeklogin')  # Explicitly select the database
         cursor.execute('SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password))
         account = cursor.fetchone()
         if account:
@@ -60,7 +60,7 @@ def register():
         password = request.form['password']
         email = request.form['email']
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('USE geeklogin')  # Explicitly select the database
+#        cursor.execute('USE geeklogin')  # Explicitly select the database
         cursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
         account = cursor.fetchone()
         if account:
