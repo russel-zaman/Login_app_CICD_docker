@@ -1,5 +1,8 @@
 Flask==2.2.3
 Flask-MySQLdb==1.0.1
 Werkzeug==2.2.3
+pylint==3.0.3
+pytest-cov==5.0.0
+pytest==8.3.2
 
 #mysqlclient==2.1.1

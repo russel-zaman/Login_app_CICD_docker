@@ -29,7 +29,7 @@ jobs:
           echo MYSQL_PORT=3306 >> .env
 
       - name: Build Docker containers
-        run: docker-compose -f docker-compose.yml build
+        run: docker-compose -f docker-compose.yml build  # "-f filename.yml" If the file has a different name or is in a different location
 
       - name: Run tests
-        run: docker-compose -f docker-compose.yml run --rm web pytest
+        run: docker-compose up unit-test-container
