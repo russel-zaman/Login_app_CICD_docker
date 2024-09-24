@@ -5,7 +5,7 @@ name: Linter
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "dev" ]
 
@@ -30,12 +30,27 @@ jobs:
         pip install -r app/requirements.txt  # Install your project dependencies
         pip install pylint
 
-    - name: Analysing the code with pylint
-      run: |
-        pylint $(git ls-files '*.py')
+    - name: Fetch latest changes
+      run: git fetch origin main --depth=1
 
-    - name: Run tests
+    - name: Get changed files
+      id: get_changed_files
       run: |
-        pytest  # Run your tests using pytest
+        CHANGED_FILES=$(git diff --name-only FETCH_HEAD HEAD -- '*.py')
+        # Convert newline-separated file list into a space-separated list for linting
+        CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ' ')
+        echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV    
 
+    - name: Run linter
+      run: |
+        if [ -n "$CHANGED_FILES" ]; then
+          pylint $CHANGED_FILES
+        else
+          echo "No Python files have changed."
+        fi
+
+
+    # - name: Run tests
+    #   run: |
+    #     pytest  # Run your tests using pytest
 
