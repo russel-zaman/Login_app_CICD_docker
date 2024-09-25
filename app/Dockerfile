@@ -1,5 +1,5 @@
 # Use the official Python image from the Docker Hub
-FROM python:3.10-slim
+FROM python:3.10-slim as base
 
 # Set environment variables within Docker container
 # When it is set to 1, it tells Python not to write .pyc files
@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends \
         pkg-config \
         libmariadb-dev \
         build-essential \
@@ -34,7 +34,10 @@ RUN chmod +x entrypoint.sh
 # Expose port 5000
 EXPOSE 5000
 
+FROM base as prod
 # Use the custom entry point script
 ENTRYPOINT ["./entrypoint.sh"]
 
+FROM base as unit_test
 
+CMD ["python", "-m", "pytest", "--cov=login_app_CICD_docker" "--cov-report=term-missing"]

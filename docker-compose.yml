@@ -1,0 +1,42 @@
+version: '3.4'
+
+services:
+  db:
+    image: mysql:latest
+    container_name: db_con
+    ports:
+      - "3306:3306"
+    volumes:
+      - /home/kazi/Ubuntu_WSL/Login_app_CICD_docker/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+      - /home/kazi/Ubuntu_WSL/Login_app_CICD_docker/data:/var/lib/mysql
+    env_file:
+      - .env
+    networks:
+      - my_network
+
+  web:
+    image: web:v2
+    container_name: web_con
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    networks:
+      - my_network
+
+  unit-test-container:
+    image: unit-test-container
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      target: unit_test
+    env_file:
+      - .env  # env_file should be a list
+    networks:
+      - my_network
+
+networks:
+  my_network:

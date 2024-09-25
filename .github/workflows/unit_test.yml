@@ -1,0 +1,35 @@
+name: Run unit tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Generate required .env file
+        run: |
+          echo MYSQL_HOST=db >> .env
+          echo MYSQL_USER=flask >> .env
+          echo MYSQL_PASSWORD=12345678 >> .env
+          echo MYSQL_DATABASE=geeklogin >> .env
+          echo MYSQL_PORT=3306 >> .env
+
+      - name: Build Docker containers
+        run: docker-compose -f docker-compose.yml build  # "-f filename.yml" If the file has a different name or is in a different location
+
+      - name: Run tests
+        run: docker-compose up unit-test-container
