@@ -27,30 +27,30 @@ services:
     networks:
       - my_network
 
-  unit-test-container:
-    image: unit-test-container
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-      target: unit_test
-    env_file:
-      - .env  # env_file should be a list
-    networks:
-      - my_network
+  # unit-test-container:
+  #   image: unit-test-container
+  #   build:
+  #     context: ./app
+  #     dockerfile: Dockerfile
+  #     target: unit_test
+  #   env_file:
+  #     - .env  # env_file should be a list
+  #   networks:
+  #     - my_network
 
-  localdev:
-    image: localdev
-    restart: always
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-      target: localdev
-    env_file:
-      - .env  # env_file should be a list
-    networks:
-      - my_network
-    ports:
-      - 5000:5000
+  # localdev:
+  #   image: localdev
+  #   restart: always
+  #   build:
+  #     context: ./app
+  #     dockerfile: Dockerfile
+  #     target: localdev
+  #   env_file:
+  #     - .env  # env_file should be a list
+  #   networks:
+  #     - my_network
+  #   ports:
+  #     - 5000:5000
 
 
 networks:

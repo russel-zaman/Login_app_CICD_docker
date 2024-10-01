@@ -41,10 +41,10 @@ FROM base as prod
 # Use the custom entry point script
 ENTRYPOINT ["./entrypoint.sh"]
 
-FROM base as unit_test
+# FROM base as unit_test
 
-CMD ["python", "-m", "pytest", "--cov=login_app_CICD_docker" "--cov-report=term-missing"]
+# CMD ["python", "-m", "pytest", "--cov=login_app_CICD_docker" "--cov-report=term-missing"]
 
-FROM base as localdev
+# FROM base as localdev
 
-CMD [ "python", "app.py"]
+# CMD [ "python", "app.py"]
