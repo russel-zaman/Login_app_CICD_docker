@@ -1,0 +1,50 @@
+name: Build and Deploy  # Name of the workflow
+
+on:  # Define the events that trigger the workflow
+  push:  # Trigger on push events
+    branches:  # Specify branches to watch
+      - main  # Only watch the main branch for pushes
+
+env:  # Environment variables available to all jobs
+  PRIVATE_KEY: ${{ secrets.RSA_KEY_FOR_APP_EC2 }}     # Private key for SSH access from GitHub Secrets
+  INSTANCE_IP: ${{ vars.INSTANCE_IP }}                # IP address of the EC2 instance (using a variable)
+
+jobs:                                                 # Define jobs to run in the workflow
+  build:                                              # Name of the job
+    runs-on: ubuntu-latest                            # Specify the environment to run the job
+
+    steps:                                            # Steps to execute in the job
+      - name: Checkout source code                    # Step to check out the code from the repository
+        uses: actions/checkout@v3                     # Use the checkout action to clone the repo
+
+      - name: Set permission for private key          # Step to set permissions on the private key file
+        run: |  # Run the following shell commands
+          echo "${{ env.PRIVATE_KEY }}" > key.pem     # Create a key.pem file with the private key
+          chmod 600 key.pem                           # Set permissions to read and write for the owner only
+
+      - name: Generate required .env file             # Step to create the .env file for environment variables
+        run: |                                        # Run the following shell commands
+          echo DEBUG=TRUE >> .env                     # Add DEBUG variable to .env
+          echo FLASK_DEBUG=1 >> .env                  # Add FLASK_DEBUG variable to .env
+          echo FLASK_APP=app.py >> .env               # Specify the Flask application entry point in .env
+
+      - name: Build and push Docker image               # Step to build and push the Docker image
+        uses: docker/build-push-action@v4               # Use the Docker build-push action
+        with:                                            # Provide input parameters to the action
+          context: ./app                                # Specify the build context (directory containing Dockerfile)
+          file: ./Dockerfile                            # Path to the Dockerfile
+          target: prod                                 # Specify the target build stage (if using multi-stage builds)
+          push: true                                  # Push the built image to Docker Hub
+          tags: russelez16/flaskapp:latest  # Tag the image with the specified name and tag
+
+      - name: SSH into VM and deploy Docker image  # Step to SSH into the EC2 instance and deploy the image
+        uses: appleboy/ssh-action@master  # Use the SSH action for connecting to the server
+        with:  # Provide input parameters to the action
+          host: ${{ env.INSTANCE_IP }}  # Specify the host (IP of the EC2 instance)
+          username: ubuntu  # Specify the username for SSH login
+          key: ${{ secrets.RSA_KEY_FOR_APP_EC2 }}  # Provide the private key for SSH access
+          script: |  # Run the following shell commands on the remote server
+            docker pull russelez16/flaskapp:latest          # Pull the latest Docker image from Docker Hub
+            docker stop flaskapp || true                    # Stop the running container (if it exists), ignore errors
+            docker rm flaskapp || true                      # Remove the container (if it exists), ignore errors
+            docker run -d -p 80:5000 --name flaskapp russelez16/flaskapp:latest     # Run the Docker container in detached mode, mapping port 80 on the host to port 5000 in the container

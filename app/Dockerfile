@@ -34,6 +34,9 @@ RUN chmod +x entrypoint.sh
 # Expose port 5000
 EXPOSE 5000
 
+#RUN adduser -u 5678 --disable-password --gecos "" appuser && chown -R appuser /app
+#USER appuser
+
 FROM base as prod
 # Use the custom entry point script
 ENTRYPOINT ["./entrypoint.sh"]
@@ -41,3 +44,7 @@ ENTRYPOINT ["./entrypoint.sh"]
 FROM base as unit_test
 
 CMD ["python", "-m", "pytest", "--cov=login_app_CICD_docker" "--cov-report=term-missing"]
+
+FROM base as localdev
+
+CMD [ "python", "app.py"]
