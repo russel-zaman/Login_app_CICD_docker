@@ -1,10 +1,11 @@
 # Use the official Python image from the Docker Hub
 FROM python:3.10-slim as base
 
-# Set environment variables within Docker container
-# When it is set to 1, it tells Python not to write .pyc files
-ENV PYTHONDONTWRITEBYTECODE 1       
-ENV PYTHONUNBUFFERED 1
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    LOG_LEVEL=DEBUG \
+    LOG_FILE=/var/log/app/app.log
 
 # Install system dependencies
 RUN apt-get update \
@@ -12,39 +13,45 @@ RUN apt-get update \
         pkg-config \
         libmariadb-dev \
         build-essential \
+        rsync \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the requirements file
-COPY requirements.txt /app/
-
-# Install Python dependencies
+# Copy and install Python dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code
-COPY . /app/
+# Copy the application code
+COPY . .
 
-COPY entrypoint.sh /app/
+# Create and configure logs directory
+RUN mkdir -p /var/log/app \
+    && chmod -R 755 /var/log/app
 
-# Make entrypoint.sh executable
-RUN chmod +x entrypoint.sh
+# Make entrypoint script executable and append logging envs
+RUN chmod +x entrypoint.sh \
+    && echo "export LOG_LEVEL=${LOG_LEVEL}" >> /app/entrypoint.sh \
+    && echo "export LOG_FILE=${LOG_FILE}" >> /app/entrypoint.sh
 
-# Expose port 5000
+# Expose the Flask port
 EXPOSE 5000
 
-#RUN adduser -u 5678 --disable-password --gecos "" appuser && chown -R appuser /app
-#USER appuser
-
+##############################
+# Production build stage
+##############################
 FROM base as prod
-# Use the custom entry point script
 ENTRYPOINT ["./entrypoint.sh"]
 
+##############################
+# Unit testing stage
+##############################
 # FROM base as unit_test
+# CMD ["python", "-m", "pytest", "--cov=login_app_CICD_docker", "--cov-report=term-missing"]
 
-# CMD ["python", "-m", "pytest", "--cov=login_app_CICD_docker" "--cov-report=term-missing"]
-
+##############################
+# Local development stage
+##############################
 # FROM base as localdev
-
-# CMD [ "python", "app.py"]
+# CMD ["python", "app.py"]
